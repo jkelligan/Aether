@@ -33,7 +33,7 @@ Adafruit_SSD1306 Display2(OLED_RESET); //Second Display
 /*CO VARIABLES*/
 /**************/
 int SensorReading;
-float PPM;
+float PPMnow;
 float PPMaverage;
 
 int HeaterPin5 = 44;
@@ -310,17 +310,30 @@ void clean() {
 }
 
 void co() {
+  float sumPPM[90];
   for (int i = 0; i < 90; i++) {
     digitalWrite(HeaterPin15, HIGH);
     SensorReading = analogRead(A1);
 
-    PPM = .5 * SensorReading - 19.355;
-    Serial.print (PPM);
+    PPMnow = .5 * SensorReading - 19.355;
+    Serial.print (PPMnow);
     Serial.println (" CO PPM");
+    sumPPM[i] = PPMnow;
     fastSensors();
+    
     delay(1000);
+    return sumPPM;
   }
+  float sum;
   digitalWrite(HeaterPin15, LOW);
+      for(i=0;i<90;i++) {
+    sum += sumPPM[i];
+    return sum;
+  }
+
+ float finalPPM = sum/90;
+ Serial.println(finalPPM);
+ Serial.print("AHHHHHH");
   values[5] = PPM;
 }
 
